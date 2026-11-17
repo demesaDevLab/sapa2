@@ -1295,8 +1295,149 @@ td {
 
     </section>
 
-    <section id="pengaduan">
+    
+<section id="pengaduan">
 
+    <h2 class="section-title">Daftar Pengaduan Siswa</h2>
+
+    <div class="table-card">
+
+        <div class="table-header">
+            <div>
+                <h2>Kelola Pengaduan</h2>
+                <p>Lihat pengaduan siswa dan berikan tanggapan.</p>
+            </div>
+
+            <div class="badge-total">
+                {{ $pengaduan->count() }} Pengaduan
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>No. Tiket</th>
+                        <th>Nama Siswa</th>
+                        <th>Kelas</th>
+                        <th>Kategori</th>
+                        <th>Judul Pengaduan</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        <th>Tanggapan</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse ($pengaduan as $item)
+
+                        <tr>
+
+                            <td>
+                                <span class="ticket">
+                                    {{ $item->nomor_tiket }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="student-name">
+                                    {{ $item->nama_siswa }}
+                                </div>
+
+                                <div class="student-info">
+                                    NIS: {{ $item->nis }}
+                                </div>
+                            </td>
+
+                            <td>
+                                {{ $item->kelas }}
+                            </td>
+
+                            <td>
+                                {{ $item->nama_kategori }}
+                            </td>
+
+                            <td>
+                                {{ $item->judul }}
+                            </td>
+
+                            <td>
+                                {{ \Carbon\Carbon::parse($item->tanggal_pengaduan)->format('d/m/Y') }}
+                            </td>
+
+                            <td>
+                                <span class="status status-{{ strtolower($item->nama_status) }}">
+                                    {{ $item->nama_status }}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="action-area">
+
+                                    <a
+                                        href="{{ route('guru_admin.pengaduan.detail', $item->id) }}"
+                                        style="
+                                            display:block;
+                                            text-align:center;
+                                            text-decoration:none;
+                                            background:#eef0ff;
+                                            color:#6877c7;
+                                            padding:8px;
+                                            border-radius:8px;
+                                            font-size:10px;
+                                        "
+                                    >
+                                        Lihat Detail
+                                    </a>
+
+                                    <form
+                                        action="{{ route('guru_admin.pengaduan.tanggapan', $item->id) }}"
+                                        method="POST"
+                                        class="response-box"
+                                    >
+
+                                        @csrf
+
+                                        <textarea
+                                            name="tanggapan"
+                                            placeholder="Tuliskan tanggapan untuk siswa..."
+                                            required
+                                            maxlength="2000"
+                                        ></textarea>
+
+                                        <button type="submit">
+                                            Kirim Tanggapan
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="8" class="empty">
+                                Belum ada pengaduan dari siswa.
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
 
 </main>
 
