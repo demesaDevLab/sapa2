@@ -387,6 +387,64 @@ body {
     padding: 15px 5px;
 }
 
+/* VISUALISASI GRAFIK */
+.chart-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chart-item {
+    width: 100%;
+}
+
+.chart-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 10px;
+    color: #777c99;
+}
+
+.chart-track {
+    width: 100%;
+    height: 11px;
+    background: #f0f1fa;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.chart-fill {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+.chart-blue {
+    background: #8998df;
+}
+
+.chart-purple {
+    background: #b39cde;
+}
+
+.chart-green {
+    background: #91cba8;
+}
+
+.chart-yellow {
+    background: #e9c77f;
+}
+
+.chart-empty {
+    color: #a3a6b8;
+    font-size: 10px;
+    text-align: center;
+    padding: 15px 5px;
+}
+
+
 @media (max-width: 1100px) {
     .rekap-grid {
         grid-template-columns: 1fr;
@@ -953,10 +1011,16 @@ td {
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-error">
-            {{ $errors->first() }}
-        </div>
-    @endif
+    <div class="alert alert-error">
+        <strong>Terjadi kesalahan validasi:</strong>
+
+        <ul style="margin: 8px 0 0 18px; line-height: 1.8;">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
     <!-- INFO -->
     <section class="info-box">
@@ -1126,175 +1190,113 @@ td {
 
         </div>
 
-    </section>
-    <section id="pengaduan">
+    
+        </div>
 
-        <div class="table-card">
+        <!-- VISUALISASI STATISTIK -->
+        @php
+            $maxKategori = max(1, (int) ($rekapKategori->max('total_data') ?? 0));
+            $maxStatus = max(1, (int) ($rekapStatus->max('total_data') ?? 0));
+            $maxKelas = max(1, (int) ($rekapKelas->max('total_data') ?? 0));
+        @endphp
 
-            <div class="table-header">
+        <h2 class="section-title">Visualisasi Statistik Pengaduan</h2>
 
-                <div>
-                    <h2>Kelola Pengaduan Siswa</h2>
-                    <p>Berikan tanggapan terhadap pengaduan siswa sesuai kategori.</p>
+        <div class="rekap-grid">
+
+            <!-- GRAFIK KATEGORI -->
+            <div class="rekap-card">
+                <h3>📂 Grafik Berdasarkan Kategori</h3>
+
+                <div class="chart-list">
+                    @forelse ($rekapKategori as $item)
+                        <div class="chart-item">
+
+                            <div class="chart-info">
+                                <span>{{ $item->nama_kategori }}</span>
+                                <strong>{{ $item->total_data }}</strong>
+                            </div>
+
+                            <div class="chart-track">
+                                <div
+                                    class="chart-fill chart-blue"
+                                    style="width: {{ ($item->total_data / $maxKategori) * 100 }}%;"
+                                ></div>
+                            </div>
+
+                        </div>
+                    @empty
+                        <div class="chart-empty">
+                            Belum ada data kategori.
+                        </div>
+                    @endforelse
                 </div>
-
-                <div class="badge-total">
-                    {{ $totalPengaduan }} Pengaduan
-                </div>
-
             </div>
 
-            @if ($pengaduan->count() > 0)
+            <!-- GRAFIK STATUS -->
+            <div class="rekap-card">
+                <h3>📌 Grafik Berdasarkan Status</h3>
 
-                <div class="table-wrapper">
+                <div class="chart-list">
+                    @forelse ($rekapStatus as $item)
+                        <div class="chart-item">
 
-                    <table>
+                            <div class="chart-info">
+                                <span>{{ $item->nama_status }}</span>
+                                <strong>{{ $item->total_data }}</strong>
+                            </div>
 
-                        <thead>
-                            <tr>
-                                <th>Tiket</th>
-                                <th>Siswa</th>
-                                <th>Kategori</th>
-                                <th>Pengaduan</th>
-                                <th>Tanggal</th>
-                                <th>Status</th>
-                                <th>Tindakan</th>
-                            </tr>
-                        </thead>
+                            <div class="chart-track">
+                                <div
+                                    class="chart-fill chart-purple"
+                                    style="width: {{ ($item->total_data / $maxStatus) * 100 }}%;"
+                                ></div>
+                            </div>
 
-                        <tbody>
-
-                        @foreach ($pengaduan as $item)
-
-                            <tr>
-
-                                <!-- TIKET -->
-                                <td>
-                                    <div class="ticket">
-                                        {{ $item->nomor_tiket }}
-                                    </div>
-                                </td>
-
-                                <!-- SISWA -->
-                                <td>
-                                    <div class="student-name">
-                                        {{ $item->nama_siswa }}
-                                    </div>
-
-                                    <div class="student-info">
-                                        {{ $item->nis }} · {{ $item->kelas }}
-                                    </div>
-                                </td>
-
-                                <!-- KATEGORI -->
-                                <td>{{ $item->nama_kategori }}</td>
-
-                                <!-- PENGADUAN -->
-                                <td>
-                                    <strong style="color:#5d6280;">
-                                        {{ $item->judul }}
-                                    </strong>
-
-                                    <div style="color:#a1a4b5;font-size:9px;margin-top:5px;max-width:220px;">
-                                        {{ \Illuminate\Support\Str::limit($item->isi_pengaduan, 70) }}
-                                    </div>
-                                </td>
-
-                                <!-- TANGGAL -->
-                                <td>
-                                    {{ date('d/m/Y', strtotime($item->tanggal_pengaduan)) }}
-                                </td>
-
-                                <!-- STATUS -->
-                                <td>
-                                    @if ($item->nama_status === 'Menunggu')
-                                        <span class="status status-menunggu">Menunggu</span>
-                                    @elseif ($item->nama_status === 'Diproses')
-                                        <span class="status status-diproses">Diproses</span>
-                                    @elseif ($item->nama_status === 'Selesai')
-                                        <span class="status status-selesai">Selesai</span>
-                                    @elseif ($item->nama_status === 'Ditolak')
-                                        <span class="status status-ditolak">Ditolak</span>
-                                    @else
-                                        <span class="status status-menunggu">
-                                            {{ $item->nama_status }}
-                                        </span>
-                                    @endif
-                                </td>
-
-                                <!-- AKSI -->
-                                <td>
-
-                                    <div class="action-area">
-
-                                        @if ($item->nama_status === 'Menunggu')
-
-                                            <div style="background:#fff5dc;color:#bd9449;padding:8px;border-radius:9px;font-size:9px;text-align:center;">
-                                                Menunggu keputusan Wakasek
-                                            </div>
-
-                                        @elseif ($item->nama_status === 'Diproses')
-
-                                            <!-- KIRIM TANGGAPAN -->
-                                            <div class="response-box">
-                                                <form
-                                                    action="{{ route('guru_admin.pengaduan.tanggapan', $item->id) }}"
-                                                    method="POST"
-                                                >
-                                                    @csrf
-
-                                                    <textarea
-                                                        name="tanggapan"
-                                                        placeholder="Tulis tanggapan untuk siswa..."
-                                                        required
-                                                    ></textarea>
-
-                                                    <button type="submit">
-                                                        💬 Kirim Tanggapan
-                                                    </button>
-                                                </form>
-                                            </div>
-
-                                        @elseif ($item->nama_status === 'Selesai')
-
-                                            <div style="background:#e7f8ee;color:#5c9c76;padding:8px;border-radius:9px;font-size:9px;text-align:center;">
-                                                ✓ Pengaduan telah selesai
-                                            </div>
-
-                                        @elseif ($item->nama_status === 'Ditolak')
-
-                                            <div style="background:#ffe9eb;color:#bd6e7d;padding:8px;border-radius:9px;font-size:9px;text-align:center;">
-                                                ✕ Pengaduan ditolak
-                                            </div>
-
-                                        @endif
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        @endforeach
-
-                        </tbody>
-
-                    </table>
-
+                        </div>
+                    @empty
+                        <div class="chart-empty">
+                            Belum ada data status.
+                        </div>
+                    @endforelse
                 </div>
+            </div>
 
-            @else
+            <!-- GRAFIK KELAS -->
+            <div class="rekap-card">
+                <h3>🎓 Grafik Berdasarkan Kelas</h3>
 
-                <div class="empty">
-                    <div style="font-size:30px;margin-bottom:10px;">📭</div>
-                    Belum ada pengaduan siswa yang masuk.
+                <div class="chart-list">
+                    @forelse ($rekapKelas as $item)
+                        <div class="chart-item">
+
+                            <div class="chart-info">
+                                <span>{{ $item->kelas ?? 'Belum diisi' }}</span>
+                                <strong>{{ $item->total_data }}</strong>
+                            </div>
+
+                            <div class="chart-track">
+                                <div
+                                    class="chart-fill chart-green"
+                                    style="width: {{ ($item->total_data / $maxKelas) * 100 }}%;"
+                                ></div>
+                            </div>
+
+                        </div>
+                    @empty
+                        <div class="chart-empty">
+                            Belum ada data kelas.
+                        </div>
+                    @endforelse
                 </div>
-
-            @endif
+            </div>
 
         </div>
 
     </section>
+
+    <section id="pengaduan">
+
 
 </main>
 
