@@ -334,6 +334,65 @@ body {
     margin-top: 4px;
 }
 
+/* REKAP AGREGAT */
+.rekap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.rekap-card {
+    background: #fff;
+    border: 1px solid #eceef8;
+    border-radius: 17px;
+    padding: 18px;
+    min-width: 0;
+}
+
+.rekap-card h3 {
+    font-size: 13px;
+    color: #555b8e;
+    margin-bottom: 13px;
+}
+
+.rekap-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 0;
+}
+
+.rekap-table th,
+.rekap-table td {
+    padding: 11px 8px;
+    border-bottom: 1px solid #f0f1f7;
+    font-size: 10px;
+    text-align: left;
+}
+
+.rekap-table th {
+    background: #fafaff;
+    color: #8589a3;
+}
+
+.rekap-table td:last-child,
+.rekap-table th:last-child {
+    text-align: center;
+}
+
+.rekap-empty {
+    color: #a3a6b8;
+    font-size: 10px;
+    text-align: center;
+    padding: 15px 5px;
+}
+
+@media (max-width: 1100px) {
+    .rekap-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* TABEL */
 .table-card {
     background: #fff;
@@ -961,7 +1020,113 @@ td {
         </div>
     </section>
 
+
+    
+
     <!-- DATA PENGADUAN -->
+         <!-- REKAP AGREGAT -->
+    <section id="rekap-agregat">
+
+        <h2 class="section-title">Rekapitulasi Data Pengaduan</h2>
+
+        <div class="rekap-grid">
+
+            <!-- REKAP KATEGORI -->
+            <div class="rekap-card">
+
+                <h3>📂 Berdasarkan Kategori</h3>
+
+                <table class="rekap-table">
+                    <thead>
+                        <tr>
+                            <th>Kategori</th>
+                            <th>Jumlah</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($rekapKategori as $item)
+                            <tr>
+                                <td>{{ $item->nama_kategori }}</td>
+                                <td>{{ $item->total_data }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" class="rekap-empty">
+                                    Belum ada data kategori.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- REKAP STATUS -->
+            <div class="rekap-card">
+
+                <h3>📌 Berdasarkan Status</h3>
+
+                <table class="rekap-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Jumlah</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($rekapStatus as $item)
+                            <tr>
+                                <td>{{ $item->nama_status }}</td>
+                                <td>{{ $item->total_data }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" class="rekap-empty">
+                                    Belum ada data status.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- REKAP KELAS -->
+            <div class="rekap-card">
+
+                <h3>🎓 Berdasarkan Kelas</h3>
+
+                <table class="rekap-table">
+                    <thead>
+                        <tr>
+                            <th>Kelas</th>
+                            <th>Jumlah</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($rekapKelas as $item)
+                            <tr>
+                                <td>{{ $item->kelas ?? 'Belum diisi' }}</td>
+                                <td>{{ $item->total_data }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" class="rekap-empty">
+                                    Belum ada data kelas.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
     <section id="pengaduan">
 
         <div class="table-card">

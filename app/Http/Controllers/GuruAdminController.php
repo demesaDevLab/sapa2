@@ -41,6 +41,7 @@ class GuruAdminController extends Controller
             return $akses;
         }
 
+        // DATA SELURUH PENGADUAN
         $pengaduan = DB::table('pengaduan')
             ->join('siswa', 'pengaduan.siswa_id', '=', 'siswa.id')
             ->join('users', 'siswa.user_id', '=', 'users.id')
@@ -63,28 +64,94 @@ class GuruAdminController extends Controller
             ->orderByDesc('pengaduan.created_at')
             ->get();
 
+        // TOTAL PENGADUAN
         $totalPengaduan = DB::table('pengaduan')->count();
 
+        // STATUS MENUNGGU
         $menunggu = DB::table('pengaduan')
             ->join('status', 'pengaduan.status_id', '=', 'status.id')
             ->where('status.nama_status', 'Menunggu')
             ->count();
 
+        // STATUS DIPROSES
         $diproses = DB::table('pengaduan')
             ->join('status', 'pengaduan.status_id', '=', 'status.id')
             ->where('status.nama_status', 'Diproses')
             ->count();
 
+        // STATUS SELESAI
         $selesai = DB::table('pengaduan')
             ->join('status', 'pengaduan.status_id', '=', 'status.id')
             ->where('status.nama_status', 'Selesai')
             ->count();
 
+        // STATUS DITOLAK
         $ditolak = DB::table('pengaduan')
             ->join('status', 'pengaduan.status_id', '=', 'status.id')
             ->where('status.nama_status', 'Ditolak')
             ->count();
 
+        // =====================================
+        // REKAP PENGADUAN BERDASARKAN KATEGORI
+        // =====================================
+
+        $rekapKategori = DB::table('pengaduan')
+            ->join(
+                'kategori',
+                'pengaduan.kategori_id',
+                '=',
+                'kategori.id'
+            )
+            ->select(
+                'kategori.nama_kategori',
+                DB::raw('COUNT(pengaduan.id) as total_data')
+            )
+            ->groupBy(
+                'kategori.id',
+                'kategori.nama_kategori'
+            )
+            ->get();
+
+        // =====================================
+        // REKAP PENGADUAN BERDASARKAN STATUS
+        // =====================================
+
+        $rekapStatus = DB::table('pengaduan')
+            ->join(
+                'status',
+                'pengaduan.status_id',
+                '=',
+                'status.id'
+            )
+            ->select(
+                'status.nama_status',
+                DB::raw('COUNT(pengaduan.id) as total_data')
+            )
+            ->groupBy(
+                'status.id',
+                'status.nama_status'
+            )
+            ->get();
+
+        // =====================================
+        // REKAP PENGADUAN BERDASARKAN KELAS
+        // =====================================
+
+        $rekapKelas = DB::table('pengaduan')
+            ->join(
+                'siswa',
+                'pengaduan.siswa_id',
+                '=',
+                'siswa.id'
+            )
+            ->select(
+                'siswa.kelas',
+                DB::raw('COUNT(pengaduan.id) as total_data')
+            )
+            ->groupBy('siswa.kelas')
+            ->get();
+
+        // KIRIM DATA KE HALAMAN DASHBOARD
         return view(
             'guru_admin.dashboard',
             compact(
@@ -93,7 +160,10 @@ class GuruAdminController extends Controller
                 'menunggu',
                 'diproses',
                 'selesai',
-                'ditolak'
+                'ditolak',
+                'rekapKategori',
+                'rekapStatus',
+                'rekapKelas'
             )
         );
     }
