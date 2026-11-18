@@ -945,7 +945,7 @@
                 <h2>Kelola Data Pengguna</h2>
                 <p>
                     Tambahkan, ubah, dan kelola akun siswa, guru/admin,
-                    wakasek, serta kepala sekolah.
+                    guru pemantau, wakasek, serta kepala sekolah.
                 </p>
             </div>
 
@@ -1012,6 +1012,8 @@
                                             <span class="role role-siswa">Siswa</span>
                                         @elseif ($item->role === 'guru_admin')
                                             <span class="role role-guru">Guru/Admin</span>
+                                        @elseif ($item->role === 'guru_pemantau')
+                                            <span class="role role-guru">Guru Pemantau</span>
                                         @elseif ($item->role === 'wakasek')
                                             <span class="role role-wakasek">Wakasek</span>
                                         @elseif ($item->role === 'kepala_sekolah')
@@ -1105,6 +1107,7 @@
                         <option value="">-- Pilih Role --</option>
                         <option value="siswa">Siswa</option>
                         <option value="guru_admin">Guru/Admin</option>
+                        <option value="guru_pemantau">Guru Pemantau</option>
                         <option value="wakasek">Wakasek</option>
                         <option value="kepala_sekolah">Kepala Sekolah</option>
                     </select>
@@ -1133,7 +1136,7 @@
                 </div>
 
                 <div class="profile-fields" id="fieldTambahGuru">
-                    <h3>Data Guru / Admin</h3>
+                    <h3>Data Guru / Admin / Pemantau</h3>
 
                     <div class="form-group">
                         <label for="tambahNipGuru">NIP</label>
@@ -1144,7 +1147,7 @@
                     <div class="form-group">
                         <label for="tambahJabatan">Jabatan</label>
                         <input type="text" name="jabatan" id="tambahJabatan"
-                            placeholder="Contoh: Guru / Admin" disabled>
+                            placeholder="Contoh: Guru / Admin / Guru Pemantau" disabled>
                     </div>
                 </div>
 
@@ -1216,6 +1219,7 @@
                     <select name="role" id="editRole" onchange="ubahFieldEdit()" required>
                         <option value="siswa">Siswa</option>
                         <option value="guru_admin">Guru/Admin</option>
+                        <option value="guru_pemantau">Guru Pemantau</option>
                         <option value="wakasek">Wakasek</option>
                         <option value="kepala_sekolah">Kepala Sekolah</option>
                     </select>
@@ -1241,7 +1245,7 @@
                 </div>
 
                 <div class="profile-fields" id="fieldEditGuru">
-                    <h3>Data Guru / Admin</h3>
+                    <h3>Data Guru / Admin / Pemantau</h3>
 
                     <div class="form-group">
                         <label for="editNipGuru">NIP</label>
@@ -1334,6 +1338,7 @@
             const fieldMap = {
                 siswa: 'fieldTambahSiswa',
                 guru_admin: 'fieldTambahGuru',
+                guru_pemantau: 'fieldTambahGuru',
                 wakasek: 'fieldTambahWakasek',
                 kepala_sekolah: 'fieldTambahKepala'
             };
@@ -1352,7 +1357,7 @@
 
             setDisabled(
                 ['tambahNipGuru', 'tambahJabatan'],
-                role !== 'guru_admin'
+                role !== 'guru_admin' && role !== 'guru_pemantau'
             );
 
             setDisabled(
@@ -1372,6 +1377,7 @@
             const fieldMap = {
                 siswa: 'fieldEditSiswa',
                 guru_admin: 'fieldEditGuru',
+                guru_pemantau: 'fieldEditGuru',
                 wakasek: 'fieldEditWakasek',
                 kepala_sekolah: 'fieldEditKepala'
             };
@@ -1390,7 +1396,7 @@
 
             setDisabled(
                 ['editNipGuru', 'editJabatan'],
-                role !== 'guru_admin'
+                role !== 'guru_admin' && role !== 'guru_pemantau'
             );
 
             setDisabled(
@@ -1407,10 +1413,12 @@
         function bukaEditDariTombol(tombol) {
             const data = tombol.dataset;
 
-            const baseUrlPengguna = "{{ url('/pengguna') }}";
+            // ALAMAT FORM EDIT SUDAH DIPERBAIKI
+            const baseUrlPengguna = "{{ url('/data-master/pengguna') }}";
 
-document.getElementById('formEdit').action =
-    baseUrlPengguna + '/' + encodeURIComponent(data.id);
+            document.getElementById('formEdit').action =
+                baseUrlPengguna + '/' + encodeURIComponent(data.id);
+
             document.getElementById('editNama').value = data.nama || '';
             document.getElementById('editEmail').value = data.email || '';
             document.getElementById('editPassword').value = '';

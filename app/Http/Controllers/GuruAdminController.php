@@ -33,13 +33,22 @@ class GuruAdminController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $akses = $this->cekAkses();
 
         if ($akses) {
             return $akses;
         }
+
+        // FILTER RIWAYAT PENGADUAN BULANAN
+        $request->validate([
+            'bulan' => 'nullable|integer|between:1,12',
+            'tahun' => 'nullable|integer|between:2000,2100',
+        ]);
+
+        $bulanDipilih = (int) $request->input('bulan', now()->month);
+        $tahunDipilih = (int) $request->input('tahun', now()->year);
 
         // DATA SELURUH PENGADUAN
         $pengaduan = DB::table('pengaduan')
@@ -151,6 +160,36 @@ class GuruAdminController extends Controller
             ->groupBy('siswa.kelas')
             ->get();
 
+        // =====================================
+        // RIWAYAT PENGADUAN BULANAN
+        // =====================================
+
+        // TOTAL PENGADUAN PADA BULAN YANG DIPILIH
+        $totalBulanan = DB::table('pengaduan')
+            ->whereMonth('tanggal_pengaduan', $bulanDipilih)
+            ->whereYear('tanggal_pengaduan', $tahunDipilih)
+            ->count();
+
+        // DAFTAR RIWAYAT PENGADUAN BULANAN
+        $riwayatBulanan = DB::table('pengaduan')
+            ->join('siswa', 'pengaduan.siswa_id', '=', 'siswa.id')
+            ->join('users', 'siswa.user_id', '=', 'users.id')
+            ->join('kategori', 'pengaduan.kategori_id', '=', 'kategori.id')
+            ->join('status', 'pengaduan.status_id', '=', 'status.id')
+            ->whereMonth('pengaduan.tanggal_pengaduan', $bulanDipilih)
+            ->whereYear('pengaduan.tanggal_pengaduan', $tahunDipilih)
+            ->select(
+                'pengaduan.id',
+                'pengaduan.nomor_tiket',
+                'pengaduan.judul',
+                'pengaduan.tanggal_pengaduan',
+                'users.name as nama_siswa',
+                'kategori.nama_kategori',
+                'status.nama_status'
+            )
+            ->orderByDesc('pengaduan.tanggal_pengaduan')
+            ->get();
+
         // KIRIM DATA KE HALAMAN DASHBOARD
         return view(
             'guru_admin.dashboard',
@@ -163,7 +202,11 @@ class GuruAdminController extends Controller
                 'ditolak',
                 'rekapKategori',
                 'rekapStatus',
-                'rekapKelas'
+                'rekapKelas',
+                'bulanDipilih',
+                'tahunDipilih',
+                'totalBulanan',
+                'riwayatBulanan'
             )
         );
     }
@@ -562,13 +605,13 @@ class GuruAdminController extends Controller
             ->get();
 
         return view(
-            'guru_admin.pengaduan.detail',
-            compact(
-                'pengaduan',
-                'lampiran',
-                'riwayat',
-                'tanggapan'
-            )
-        );
+    'guru_admin.detail',
+    compact(
+        'pengaduan',
+        'lampiran',
+        'riwayat',
+        'tanggapan'
+    )
+ );
     }
 }

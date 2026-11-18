@@ -115,7 +115,6 @@ body {
     padding-left: 0;
 }
 
-/* Submenu mengikuti tampilan laptop */
 .data-master-menu a {
     display: flex;
     align-items: center;
@@ -444,7 +443,6 @@ body {
     padding: 15px 5px;
 }
 
-
 @media (max-width: 1100px) {
     .rekap-grid {
         grid-template-columns: 1fr;
@@ -624,6 +622,149 @@ td {
     padding: 45px 20px;
     color: #a3a6b8;
     font-size: 12px;
+}
+
+/* =====================================
+   RIWAYAT PENGADUAN BULANAN
+===================================== */
+
+.riwayat-bulanan {
+    background: #fff;
+    border: 1px solid #eceef8;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+
+.riwayat-title {
+    font-size: 16px;
+    color: #555b8e;
+    margin-bottom: 7px;
+}
+
+.riwayat-description {
+    font-size: 11px;
+    color: #989caf;
+    line-height: 1.6;
+}
+
+.filter-bulanan {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.filter-bulanan .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.filter-bulanan label {
+    font-size: 11px;
+    color: #8589a3;
+}
+
+.filter-bulanan select,
+.filter-bulanan input {
+    padding: 10px 12px;
+    border: 1px solid #eceef8;
+    border-radius: 9px;
+    color: #696d87;
+    background: #fff;
+    font-size: 11px;
+    outline: none;
+}
+
+.filter-bulanan select {
+    min-width: 140px;
+}
+
+.filter-bulanan input {
+    width: 110px;
+}
+
+.filter-bulanan button {
+    border: none;
+    padding: 11px 18px;
+    border-radius: 9px;
+    background: #8998df;
+    color: #fff;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.filter-bulanan button:hover {
+    background: #7788d5;
+}
+
+.total-bulanan {
+    background: #eef0ff;
+    border: 1px solid #e4e7fa;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 22px;
+}
+
+.total-bulanan p {
+    font-size: 11px;
+    color: #8589a3;
+}
+
+.total-bulanan h3 {
+    font-size: 27px;
+    color: #6877c7;
+    margin: 7px 0;
+}
+
+.total-bulanan span {
+    font-size: 10px;
+    color: #989caf;
+}
+
+.riwayat-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.riwayat-bulanan table {
+    width: 100%;
+    min-width: 750px;
+    border-collapse: collapse;
+}
+
+.riwayat-bulanan th {
+    background: #fafaff;
+    color: #8589a3;
+    padding: 13px;
+    text-align: left;
+    font-size: 10px;
+}
+
+.riwayat-bulanan td {
+    padding: 13px;
+    border-top: 1px solid #f0f1f7;
+    color: #696d87;
+    font-size: 11px;
+}
+
+.status-riwayat {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: #eef0ff;
+    color: #6877c7;
+    font-size: 9px;
+}
+
+.riwayat-kosong {
+    text-align: center;
+    padding: 25px !important;
+    color: #a3a6b8;
 }
 
 /* RESPONSIVE LAPTOP */
@@ -884,10 +1025,30 @@ td {
     .table-header h2 {
         font-size: 14px;
     }
+
+    .riwayat-bulanan {
+        padding: 15px;
+    }
+
+    .filter-bulanan {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-bulanan .filter-group,
+    .filter-bulanan select,
+    .filter-bulanan input,
+    .filter-bulanan button {
+        width: 100%;
+    }
 }
 
 /* POSISI TUJUAN SCROLL */
 #statistik {
+    scroll-margin-top: 25px;
+}
+
+#riwayat-bulanan {
     scroll-margin-top: 25px;
 }
 
@@ -941,7 +1102,7 @@ td {
             <span>Data Master</span>
         </a>
 
-        <!-- TIGA SUBMENU SELALU TAMPIL -->
+        <!-- SUBMENU -->
         <div class="data-master-menu" id="dataMasterSubmenu">
 
             <a href="{{ route('kategori.index') }}">
@@ -1011,16 +1172,16 @@ td {
     @endif
 
     @if ($errors->any())
-    <div class="alert alert-error">
-        <strong>Terjadi kesalahan validasi:</strong>
+        <div class="alert alert-error">
+            <strong>Terjadi kesalahan validasi:</strong>
 
-        <ul style="margin: 8px 0 0 18px; line-height: 1.8;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+            <ul style="margin: 8px 0 0 18px; line-height: 1.8;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <!-- INFO -->
     <section class="info-box">
@@ -1084,11 +1245,7 @@ td {
         </div>
     </section>
 
-
-    
-
-    <!-- DATA PENGADUAN -->
-         <!-- REKAP AGREGAT -->
+    <!-- REKAP AGREGAT -->
     <section id="rekap-agregat">
 
         <h2 class="section-title">Rekapitulasi Data Pengaduan</h2>
@@ -1188,9 +1345,6 @@ td {
 
             </div>
 
-        </div>
-
-    
         </div>
 
         <!-- VISUALISASI STATISTIK -->
@@ -1295,68 +1449,123 @@ td {
 
     </section>
 
-    
-<section id="pengaduan">
+    <!-- RIWAYAT PENGADUAN BULANAN -->
+    <section class="riwayat-bulanan" id="riwayat-bulanan">
 
-    <h2 class="section-title">Daftar Pengaduan Siswa</h2>
+        <h2 class="riwayat-title">
+            Riwayat Pengaduan Bulanan
+        </h2>
 
-    <div class="table-card">
+        <p class="riwayat-description">
+            Rekap pengaduan siswa berdasarkan bulan dan tahun.
+        </p>
 
-        <div class="table-header">
-            <div>
-                <h2>Kelola Pengaduan</h2>
-                <p>Lihat pengaduan siswa dan berikan tanggapan.</p>
+        @php
+            $namaBulan = [
+                1 => 'Januari',
+                2 => 'Februari',
+                3 => 'Maret',
+                4 => 'April',
+                5 => 'Mei',
+                6 => 'Juni',
+                7 => 'Juli',
+                8 => 'Agustus',
+                9 => 'September',
+                10 => 'Oktober',
+                11 => 'November',
+                12 => 'Desember'
+            ];
+        @endphp
+
+        <!-- FILTER BULAN DAN TAHUN -->
+        <form
+          action="{{ route('guru_admin.dashboard') }}#riwayat-bulanan"
+          method="GET"
+          class="filter-bulanan"
+        >
+
+            <div class="filter-group">
+                <label for="bulan">Pilih Bulan</label>
+
+                <select name="bulan" id="bulan">
+                    @foreach ($namaBulan as $nomor => $nama)
+                        <option
+                            value="{{ $nomor }}"
+                            {{ (int) $bulanDipilih === $nomor ? 'selected' : '' }}
+                        >
+                            {{ $nama }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
-            <div class="badge-total">
-                {{ $pengaduan->count() }} Pengaduan
+            <div class="filter-group">
+                <label for="tahun">Pilih Tahun</label>
+
+                <input
+                    type="number"
+                    name="tahun"
+                    id="tahun"
+                    value="{{ $tahunDipilih }}"
+                    min="2000"
+                    max="2100"
+                    required
+                >
             </div>
+
+            <button type="submit">
+                Tampilkan
+            </button>
+
+        </form>
+
+        <!-- TOTAL PENGADUAN BULANAN -->
+        <div class="total-bulanan">
+
+            <p>Total Pengaduan</p>
+
+            <h3>{{ $totalBulanan }}</h3>
+
+            <span>
+                Bulan {{ $namaBulan[$bulanDipilih] ?? '' }}
+                {{ $tahunDipilih }}
+            </span>
+
         </div>
 
-        <div class="table-wrapper">
+        <!-- TABEL RIWAYAT -->
+        <h2 class="section-title">
+            Daftar Riwayat Pengaduan
+        </h2>
+
+        <div class="riwayat-table-wrapper">
 
             <table>
+
                 <thead>
                     <tr>
-                        <th>No. Tiket</th>
-                        <th>Nama Siswa</th>
-                        <th>Kelas</th>
-                        <th>Kategori</th>
-                        <th>Judul Pengaduan</th>
+                        <th>No</th>
                         <th>Tanggal</th>
+                        <th>Nama Siswa</th>
+                        <th>Judul Pengaduan</th>
+                        <th>Kategori</th>
                         <th>Status</th>
-                        <th>Tanggapan</th>
                     </tr>
                 </thead>
 
                 <tbody>
 
-                    @forelse ($pengaduan as $item)
+                    @forelse ($riwayatBulanan as $index => $item)
 
                         <tr>
+                            <td>{{ $index + 1 }}</td>
 
                             <td>
-                                <span class="ticket">
-                                    {{ $item->nomor_tiket }}
-                                </span>
+                                {{ \Carbon\Carbon::parse($item->tanggal_pengaduan)->format('d/m/Y') }}
                             </td>
 
                             <td>
-                                <div class="student-name">
-                                    {{ $item->nama_siswa }}
-                                </div>
-
-                                <div class="student-info">
-                                    NIS: {{ $item->nis }}
-                                </div>
-                            </td>
-
-                            <td>
-                                {{ $item->kelas }}
-                            </td>
-
-                            <td>
-                                {{ $item->nama_kategori }}
+                                {{ $item->nama_siswa }}
                             </td>
 
                             <td>
@@ -1364,80 +1573,177 @@ td {
                             </td>
 
                             <td>
-                                {{ \Carbon\Carbon::parse($item->tanggal_pengaduan)->format('d/m/Y') }}
+                                {{ $item->nama_kategori }}
                             </td>
 
                             <td>
-                                <span class="status status-{{ strtolower($item->nama_status) }}">
+                                <span class="status-riwayat">
                                     {{ $item->nama_status }}
                                 </span>
                             </td>
-
-                            <td>
-
-                                <div class="action-area">
-
-                                    <a
-                                        href="{{ route('guru_admin.pengaduan.detail', $item->id) }}"
-                                        style="
-                                            display:block;
-                                            text-align:center;
-                                            text-decoration:none;
-                                            background:#eef0ff;
-                                            color:#6877c7;
-                                            padding:8px;
-                                            border-radius:8px;
-                                            font-size:10px;
-                                        "
-                                    >
-                                        Lihat Detail
-                                    </a>
-
-                                    <form
-                                        action="{{ route('guru_admin.pengaduan.tanggapan', $item->id) }}"
-                                        method="POST"
-                                        class="response-box"
-                                    >
-
-                                        @csrf
-
-                                        <textarea
-                                            name="tanggapan"
-                                            placeholder="Tuliskan tanggapan untuk siswa..."
-                                            required
-                                            maxlength="2000"
-                                        ></textarea>
-
-                                        <button type="submit">
-                                            Kirim Tanggapan
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </td>
-
                         </tr>
 
                     @empty
 
                         <tr>
-                            <td colspan="8" class="empty">
-                                Belum ada pengaduan dari siswa.
+                            <td colspan="6" class="riwayat-kosong">
+                                Belum ada pengaduan pada bulan ini.
                             </td>
                         </tr>
 
                     @endforelse
 
                 </tbody>
+
             </table>
 
         </div>
 
-    </div>
+    </section>
 
-</section>
+    <!-- DAFTAR PENGADUAN SISWA -->
+    <section id="pengaduan">
+
+        <h2 class="section-title">Daftar Pengaduan Siswa</h2>
+
+        <div class="table-card">
+
+            <div class="table-header">
+                <div>
+                    <h2>Kelola Pengaduan</h2>
+                    <p>Lihat pengaduan siswa dan berikan tanggapan.</p>
+                </div>
+
+                <div class="badge-total">
+                    {{ $pengaduan->count() }} Pengaduan
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No. Tiket</th>
+                            <th>Nama Siswa</th>
+                            <th>Kelas</th>
+                            <th>Kategori</th>
+                            <th>Judul Pengaduan</th>
+                            <th>Tanggal</th>
+                            <th>Status</th>
+                            <th>Tanggapan</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @forelse ($pengaduan as $item)
+
+                            <tr>
+
+                                <td>
+                                    <span class="ticket">
+                                        {{ $item->nomor_tiket }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="student-name">
+                                        {{ $item->nama_siswa }}
+                                    </div>
+
+                                    <div class="student-info">
+                                        NIS: {{ $item->nis }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {{ $item->kelas }}
+                                </td>
+
+                                <td>
+                                    {{ $item->nama_kategori }}
+                                </td>
+
+                                <td>
+                                    {{ $item->judul }}
+                                </td>
+
+                                <td>
+                                    {{ \Carbon\Carbon::parse($item->tanggal_pengaduan)->format('d/m/Y') }}
+                                </td>
+
+                                <td>
+                                    <span class="status status-{{ strtolower($item->nama_status) }}">
+                                        {{ $item->nama_status }}
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <div class="action-area">
+
+                                        <a
+                                            href="{{ route('guru_admin.pengaduan.detail', $item->id) }}"
+                                            style="
+                                                display:block;
+                                                text-align:center;
+                                                text-decoration:none;
+                                                background:#eef0ff;
+                                                color:#6877c7;
+                                                padding:8px;
+                                                border-radius:8px;
+                                                font-size:10px;
+                                            "
+                                        >
+                                            Lihat Detail
+                                        </a>
+
+                                        <form
+                                            action="{{ route('guru_admin.pengaduan.tanggapan', $item->id) }}"
+                                            method="POST"
+                                            class="response-box"
+                                        >
+
+                                            @csrf
+
+                                            <textarea
+                                                name="tanggapan"
+                                                placeholder="Tuliskan tanggapan untuk siswa..."
+                                                required
+                                                maxlength="2000"
+                                            ></textarea>
+
+                                            <button type="submit">
+                                                Kirim Tanggapan
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+                                <td colspan="8" class="empty">
+                                    Belum ada pengaduan dari siswa.
+                                </td>
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </main>
 

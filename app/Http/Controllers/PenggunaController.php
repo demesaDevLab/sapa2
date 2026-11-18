@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PenggunaController extends Controller
 {
@@ -29,7 +30,7 @@ class PenggunaController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:siswa,guru_admin,wakasek,kepala_sekolah',
+            'role' => 'required|in:siswa,guru_admin,guru_pemantau,wakasek,kepala_sekolah',
             'phone_number' => 'nullable|string|max:15',
 
             // Profil siswa
@@ -37,7 +38,7 @@ class PenggunaController extends Controller
             'kelas' => 'nullable|string|max:50',
             'jurusan' => 'nullable|string|max:100',
 
-            // Profil guru/admin
+            // Profil guru, admin, dan pemantau
             'nip' => 'nullable|string|max:30',
             'jabatan' => 'nullable|string|max:100',
 
@@ -78,8 +79,8 @@ class PenggunaController extends Controller
                 ]);
             }
 
-            // Profil guru/admin
-            if ($request->role === 'guru_admin') {
+            // Profil guru/admin dan guru pemantau
+            elseif (in_array($request->role, ['guru_admin', 'guru_pemantau'])) {
                 DB::table('guru_admin')->insert([
                     'user_id' => $userId,
                     'nip' => $request->nip,
@@ -91,7 +92,7 @@ class PenggunaController extends Controller
             }
 
             // Profil wakasek
-            if ($request->role === 'wakasek') {
+            elseif ($request->role === 'wakasek') {
                 DB::table('wakasek')->insert([
                     'user_id' => $userId,
                     'nama_wakasek' => $request->name,
@@ -102,7 +103,7 @@ class PenggunaController extends Controller
             }
 
             // Profil kepala sekolah
-            if ($request->role === 'kepala_sekolah') {
+            elseif ($request->role === 'kepala_sekolah') {
                 DB::table('kepala_sekolah')->insert([
                     'user_id' => $userId,
                     'nama_kepala_sekolah' => $request->name,
@@ -124,7 +125,7 @@ class PenggunaController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
-            'role' => 'required|in:siswa,guru_admin,wakasek,kepala_sekolah',
+            'role' => 'required|in:siswa,guru_admin,guru_pemantau,wakasek,kepala_sekolah',
             'phone_number' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8',
 
@@ -141,10 +142,11 @@ class PenggunaController extends Controller
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan.',
             'role.required' => 'Role wajib dipilih.',
+            'role.in' => 'Role tidak valid.',
             'password.min' => 'Password minimal 8 karakter.',
         ]);
 
-        // Pastikan pengguna ditemukan sebelum diperbarui
+        // Pastikan pengguna ditemukan
         $pengguna = DB::table('users')
             ->where('id', $id)
             ->first();
@@ -163,6 +165,7 @@ class PenggunaController extends Controller
                 'updated_at' => now(),
             ];
 
+            // Password hanya diperbarui jika diisi
             if ($request->filled('password')) {
                 $data['password'] = Hash::make($request->password);
             }
@@ -189,8 +192,8 @@ class PenggunaController extends Controller
                 DB::table('kepala_sekolah')->where('user_id', $id)->delete();
             }
 
-            // Update atau buat profil guru/admin
-            elseif ($request->role === 'guru_admin') {
+            // Update atau buat profil guru/admin/pemantau
+            elseif (in_array($request->role, ['guru_admin', 'guru_pemantau'])) {
                 DB::table('guru_admin')->updateOrInsert(
                     ['user_id' => $id],
                     [
@@ -249,16 +252,15 @@ class PenggunaController extends Controller
     // MENGHAPUS PENGGUNA
     // ==========================================
     public function destroy(int $id): \Illuminate\Http\RedirectResponse
-{
-    // Cegah pengguna menghapus akun sendiri
-    if ((int) \Illuminate\Support\Facades\Auth::id() === (int) $id) {
-        return back()->with(
-            'error',
-            'Akun yang sedang digunakan tidak dapat dihapus.'
-        );
-    }
+    {
+        // Cegah pengguna menghapus akun sendiri
+        if ((int) Auth::id() === (int) $id) {
+            return back()->with(
+                'error',
+                'Akun yang sedang digunakan tidak dapat dihapus.'
+            );
+        }
 
-    // Lanjutkan kode destroy() yang sudah ada di bawah sini
         // Periksa apakah pengguna tersedia
         $pengguna = DB::table('users')
             ->where('id', $id)
